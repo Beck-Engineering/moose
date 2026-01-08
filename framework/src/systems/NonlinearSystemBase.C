@@ -2421,8 +2421,19 @@ NonlinearSystemBase::findImplicitGeometricCouplingEntries(
   const auto & ncs = _constraints.getActiveNodalConstraints();
   for (const auto & nc : ncs)
   {
-    std::vector<dof_id_type> primary_dofs;
+    // First, let the constraint contribute its custom sparsity (if any)
+    // This allows batch constraints to provide O(n) exact pairs instead of O(n^2) cartesian product
+    nc->contributeSparsity(dofMap(), graph, this->processor_id());
+
+    // Then fall back to standard behavior for constraints that don't override contributeSparsity()
+    // Skip cartesian product if node vectors are small (likely a batch constraint that handled it above)
     std::vector<dof_id_type> & primary_node_ids = nc->getPrimaryNodeId();
+    std::vector<dof_id_type> & secondary_node_ids = nc->getSecondaryNodeId();
+
+    if (primary_node_ids.size() <= 1 || secondary_node_ids.size() <= 1)
+      continue;
+
+    std::vector<dof_id_type> primary_dofs;
     for (const auto & node_id : primary_node_ids)
     {
       Node * node = _mesh.queryNodePtr(node_id);
@@ -2435,7 +2446,6 @@ NonlinearSystemBase::findImplicitGeometricCouplingEntries(
     _communicator.allgather(primary_dofs);
 
     std::vector<dof_id_type> secondary_dofs;
-    std::vector<dof_id_type> & secondary_node_ids = nc->getSecondaryNodeId();
     for (const auto & node_id : secondary_node_ids)
     {
       Node * node = _mesh.queryNodePtr(node_id);
