@@ -16,6 +16,8 @@
 
 #include "libmesh/sparse_matrix.h"
 
+#include <unordered_map>
+
 InputParameters
 NodalConstraint::validParams()
 {
@@ -162,4 +164,15 @@ NodalConstraint::computeJacobian(const SparseMatrix<Number> & jacobian)
 void
 NodalConstraint::updateConnectivity()
 {
+}
+
+void
+NodalConstraint::contributeSparsity(
+    const DofMap & /*dof_map*/,
+    std::unordered_map<dof_id_type, std::vector<dof_id_type>> & /*graph*/,
+    processor_id_type /*my_pid*/) const
+{
+  // Default: empty implementation
+  // The existing findImplicitGeometricCouplingEntries() handles the
+  // standard case using getPrimaryNodeId()/getSecondaryNodeId()
 }

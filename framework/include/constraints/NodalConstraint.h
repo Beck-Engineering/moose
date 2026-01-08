@@ -13,6 +13,10 @@
 #include "Constraint.h"
 #include "NeighborCoupleableMooseVariableDependencyIntermediateInterface.h"
 
+#include "libmesh/dof_map.h"
+
+#include <unordered_map>
+
 class NodalConstraint : public Constraint,
                         public NeighborCoupleableMooseVariableDependencyIntermediateInterface,
                         public NeighborMooseVariableInterface<Real>
@@ -38,6 +42,23 @@ public:
    * Built the connectivity for this constraint
    */
   virtual void updateConnectivity();
+
+  /**
+   * Contribute constraint-specific DOF pairs to the sparsity pattern.
+   *
+   * This method allows derived classes to provide precise sparsity information
+   * for their constraint coupling pattern. Override this for batch constraints
+   * that manage many pairs internally to provide exact pair-wise coupling
+   * instead of the O(n^2) Cartesian product.
+   *
+   * @param dof_map Reference to the system's DofMap for DOF lookups
+   * @param graph Output sparsity graph mapping row DOF -> column DOFs
+   * @param my_pid This processor's ID for filtering local contributions
+   */
+  virtual void contributeSparsity(
+      const DofMap & dof_map,
+      std::unordered_map<dof_id_type, std::vector<dof_id_type>> & graph,
+      processor_id_type my_pid) const;
 
   /**
    * Computes the nodal residual.
