@@ -75,6 +75,7 @@ temp_print_trace.*
 *.outp
 *.patch
 *.txt
+!conda_env_*.txt
 *.bib.bak
 *.out
 *.vtk
