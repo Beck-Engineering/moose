@@ -2291,11 +2291,11 @@ NonlinearSystemBase::findImplicitGeometricCouplingEntries(
     nc->contributeSparsity(dofMap(), graph, this->processor_id());
 
     // Then fall back to standard behavior for constraints that don't override contributeSparsity()
-    // Skip cartesian product if node vectors are small (likely a batch constraint that handled it above)
+    // Only skip if either node vector is empty (nothing to couple)
     std::vector<dof_id_type> & primary_node_ids = nc->getPrimaryNodeId();
     std::vector<dof_id_type> & secondary_node_ids = nc->getSecondaryNodeId();
 
-    if (primary_node_ids.size() <= 1 || secondary_node_ids.size() <= 1)
+    if (primary_node_ids.empty() || secondary_node_ids.empty())
       continue;
 
     std::vector<dof_id_type> primary_dofs;
