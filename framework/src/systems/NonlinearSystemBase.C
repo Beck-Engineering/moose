@@ -658,6 +658,10 @@ NonlinearSystemBase::addDiracKernel(const std::string & kernel_name,
     // Add to theWarehouse, a centralized storage for all moose objects
     _fe_problem.theWarehouse().add(kernel);
   }
+
+  if (parameters.have_parameter<std::vector<AuxVariableName>>("save_in") &&
+      parameters.get<std::vector<AuxVariableName>>("save_in").size() > 0)
+    _has_save_in = true;
 }
 
 void
