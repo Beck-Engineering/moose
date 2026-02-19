@@ -42,7 +42,7 @@ public:
   /**
    * This function reads the data from file
    */
-  void readData();
+  virtual void readData();
 
   /**
    * This function generates voronoi tesselation center points
@@ -64,7 +64,7 @@ public:
    * @param prop_num the column index of the property we want to retrieve
    * @return the property value for the element
    */
-  Real getElementData(const Elem * const elem, const unsigned int prop_num) const;
+  virtual Real getElementData(const Elem * const elem, const unsigned int prop_num) const;
 
   /**
    * This function retrieves properties for nodes, from a file that has node-based data

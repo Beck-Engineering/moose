@@ -101,6 +101,18 @@ public:
     _names.clear();
   }
 
+  /// Release all stored data to free memory (useful for rank-local reading patterns
+  /// where data is extracted to a local structure then the full dataset is no longer needed)
+  void clearData()
+  {
+    _data.clear();
+    _data.shrink_to_fit();
+    _names.clear();
+    _names.shrink_to_fit();
+    _row_offsets.clear();
+    _row_offsets.shrink_to_fit();
+  }
+
   /**
    * Return the column/row names.
    */
