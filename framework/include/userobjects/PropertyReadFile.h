@@ -72,7 +72,7 @@ public:
    * @param prop_num the column index of the property we want to retrieve
    * @return the property value for the node
    */
-  Real getNodeData(const Node * const node, const unsigned int prop_num) const;
+  virtual Real getNodeData(const Node * const node, const unsigned int prop_num) const;
 
   /**
    * This function retrieves properties for elements from a file with nearest neighbor / grain based
