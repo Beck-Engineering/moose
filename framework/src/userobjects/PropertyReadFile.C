@@ -305,13 +305,6 @@ Real
 PropertyReadFile::getElementData(const Elem * elem, unsigned int prop_num) const
 {
   unsigned int jelem = elem->id();
-  // DIAGNOSTIC: detect if base class is called when it shouldn't be
-  if (_reader.getData().empty())
-    mooseError("PropertyReadFile::getElementData() DIAGNOSTIC: base class called on '",
-               name(), "' for element ", jelem, " prop ", prop_num,
-               " but _reader has 0 rows. Virtual dispatch may have failed. "
-               "This is the BASE CLASS version being called on rank ",
-               processor_id(), ".");
   if (jelem >= _mesh.nElem())
     mooseError("Element ID ",
                jelem,
