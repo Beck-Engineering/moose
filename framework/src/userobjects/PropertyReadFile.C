@@ -66,6 +66,12 @@ PropertyReadFile::validParams()
       "load_first_file_on_construction",
       true,
       "Whether to read the first CSV file on construction or on the first execution");
+  params.addParam<bool>(
+      "read_on_rank0_and_broadcast",
+      false,
+      "Read the property file on rank 0 only and broadcast the parsed data to all other ranks, "
+      "instead of every rank reading the whole file. Recommended for large files on shared "
+      "filesystems.");
 
   // Set an execution schedule to what makes sense currently
   // We do not allow INITIAL because we read the file at construction
@@ -84,7 +90,8 @@ PropertyReadFile::PropertyReadFile(const InputParameters & parameters)
     _current_file_index(declareRestartableData<unsigned int>("file_index", 0)),
     // index of files must be capped if restarting after having read all files
     _reader(
-        _prop_file_names[std::min(_current_file_index, (unsigned int)_prop_file_names.size() - 1)]),
+        _prop_file_names[std::min(_current_file_index, (unsigned int)_prop_file_names.size() - 1)],
+        getParam<bool>("read_on_rank0_and_broadcast") ? &_communicator : nullptr),
     _read_type(getParam<MooseEnum>("read_type").getEnum<ReadTypeEnum>()),
     _use_random_tesselation(getParam<bool>("use_random_voronoi")),
     _rand_seed(getParam<unsigned int>("rand_seed")),
